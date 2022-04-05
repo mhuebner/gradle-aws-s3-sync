@@ -10,19 +10,19 @@ import static groovyx.net.http.Method.*
 
 version = "0.11-SNAPSHOT"
 group = "com.monochromeroad.gradle-plugins"
-targetCompatibility = 1.6
+targetCompatibility = 1.8
 
 repositories {
-    jcenter()
+    mavenCentral()
     maven {
         url "https://oss.sonatype.org/content/repositories/snapshots/"
     }
 }
 
 dependencies {
-    compile gradleApi()
-    compile "net.java.dev.jets3t:jets3t:0.9.4"
-    testCompile("org.spockframework:spock-core:1.0-groovy-2.4") {
+    implementation gradleApi()
+    implementation "net.java.dev.jets3t:jets3t:0.9.4"
+    testImplementation ('org.spockframework:spock-core:2.1-groovy-3.0') {
         exclude group: 'org.codehaus.groovy'
     }
 }
@@ -31,7 +31,7 @@ groovydoc {
     link("https://jets3t.s3.amazonaws.com/api/", "org.jets3t.")
     link("http://www.gradle.org/docs/current/javadoc/", "org.gradle.")
     link("http://docs.oracle.com/javase/1.7.0/docs/api/", "java.")
-    groovyClasspath = configurations.compile
+    groovyClasspath = configurations.implementation
 }
 
 task sourcesJar(type: Jar) {
@@ -49,6 +49,10 @@ task groovydocJar(type: Jar, dependsOn: groovydoc) {
     from 'build/docs/groovydoc'
 }
 jar.dependsOn sourcesJar, javadocJar, groovydocJar
+
+tasks.withType(Test) {
+    useJUnitPlatform()
+}
 
 final pomConfig = {
     packaging "jar"
